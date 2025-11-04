@@ -17,3 +17,6 @@ __pycache__/
 ## Ignorar os modelos NLP baixados
 fine_tuned_large_model/
 fine_tuned_model/
+
+# Ignorar a pasta do vsCode
+.vscode/

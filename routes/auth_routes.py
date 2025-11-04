@@ -44,7 +44,6 @@ async def login(response: Response):
 @router.get("/callback")
 async def callback(code: str = None, state: str = None, error: str = None):
     stored_state = session_store.get(state)
-    print(f"Stored state: {stored_state}, Received state: {state}")
     if not state or not stored_state or state != stored_state.get("state"):
         return RedirectResponse(url=f"{FRONTEND_URL}?error=state_mismatch")
 
@@ -78,7 +77,26 @@ async def callback(code: str = None, state: str = None, error: str = None):
     access_token = response_data.get("access_token")
     refresh_token = response_data.get("refresh_token")
 
+    user_info = await request_user_info(access_token)
+    if not user_info:
+        return RedirectResponse(url=f"{FRONTEND_URL}?error=user_info_fetch_failed")
+    
+    display_name = user_info.get("display_name", "User")
+
+
     frontend_url = f"{FRONTEND_URL}/chat"
-    redirect_url = f"{frontend_url}"
+    redirect_url = f"{frontend_url}?display_name={display_name}"
     return RedirectResponse(url=redirect_url)
-        
+
+async def request_user_info(access_token: str):
+    user_info_url = "https://api.spotify.com/v1/me"
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response = requests.get(user_info_url, headers=headers)
+    if response.status_code != 200:
+        print(f"Failed to fetch user info: {response.status_code} - {response.text}")
+        return None
+
+    return response.json()
