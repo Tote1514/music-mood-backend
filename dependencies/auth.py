@@ -1,5 +1,6 @@
-from fastapi import Request, HTTPException
 from http import HTTPStatus
+
+from fastapi import HTTPException, Request
 
 
 def get_access_token(request: Request) -> str:

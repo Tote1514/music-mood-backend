@@ -1,11 +1,10 @@
 import base64
-from http import HTTPStatus
 import secrets
+from http import HTTPStatus
 from urllib.parse import urlencode
 
-from fastapi.security import OAuth2PasswordRequestForm
 import requests
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Response
 from fastapi.responses import RedirectResponse
 
 from config import Settings
@@ -100,6 +99,7 @@ async def callback(code: str = None, state: str = None, error: str = None):
     )
 
     return response
+
 
 @router.post("/token", tags=["authentication"])
 async def login_for_access_token(response: Response):

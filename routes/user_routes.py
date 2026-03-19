@@ -1,9 +1,10 @@
 from http import HTTPStatus
-import httpx
-from fastapi import APIRouter, HTTPException, Depends
 
-from schemas.user_schema import UserResponse
+import httpx
+from fastapi import APIRouter, Depends, HTTPException
+
 from dependencies.auth import get_access_token
+from schemas.user_schema import UserResponse
 
 router = APIRouter(prefix="/user")
 
