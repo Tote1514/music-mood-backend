@@ -5,7 +5,7 @@ import requests
 
 
 class Spotify_Service:
-    def get_user_profile(access_token: str):
+    async def get_user_profile(self, access_token: str):
         user_info_url = "https://api.spotify.com/v1/me"
         headers = {
             "Authorization": f"Bearer {access_token}"
@@ -13,15 +13,20 @@ class Spotify_Service:
         response = requests.get(user_info_url, headers=headers)
 
         if response.status_code != HTTPStatus.OK:
-            raise Exception("Failed to fetch user info from Spotify")
+            raise HTTPException(
+                status_code=response.status_code,
+                detail="Failed to fetch user info from Spotify"
+            )
 
-        return response.json()
+        display_name = response.json().get("display_name", "User")
 
-    def create_playlist(self, access_token: str,
+        return {"display_name": display_name}
+
+    async def create_playlist(self, access_token: str,
                         playlist_name: str,
                         description: str,
                         track_uris: list):
-        playlist = self._create_playlist(access_token,
+        playlist = await self._create_playlist(access_token,
                                          playlist_name,
                                          description)
         self._add_tracks_to_playlist(access_token, playlist["id"], track_uris)
@@ -31,7 +36,7 @@ class Spotify_Service:
             "url": playlist["external_urls"]["spotify"],
         }
 
-    def _create_playlist(access_token: str,
+    async def _create_playlist(self, access_token: str,
                          playlist_name: str,
                          description: str):
         create_playlist_url = "https://api.spotify.com/v1/me/playlists"
@@ -54,7 +59,7 @@ class Spotify_Service:
 
         return response.json()
 
-    def _add_tracks_to_playlist(access_token: str,
+    async def _add_tracks_to_playlist(self, access_token: str,
                                 playlist_id: str,
                                 track_uris: list):
         add_tracks_url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
