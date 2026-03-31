@@ -1,7 +1,7 @@
 from http import HTTPStatus
-from http.client import HTTPException
 
 import requests
+from fastapi import HTTPException
 
 
 class Spotify_Service:
@@ -29,7 +29,7 @@ class Spotify_Service:
         playlist = await self._create_playlist(access_token,
                                          playlist_name,
                                          description)
-        self._add_tracks_to_playlist(access_token, playlist["id"], track_uris)
+        await self._add_tracks_to_playlist(access_token, playlist["id"], track_uris)
         return {
             "id": playlist["id"],
             "name": playlist["name"],

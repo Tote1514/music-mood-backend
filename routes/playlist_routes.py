@@ -17,7 +17,7 @@ router = APIRouter()
 async def create_playlist(music_requests: PlaylistCreateRequest,
                           access_token: str = Depends(get_access_token)
                           ):
-    playlist = spotify.create_playlist(access_token,
+    playlist = await spotify.create_playlist(access_token,
                                        music_requests.name,
                                        music_requests.description,
                                        music_requests.track_uris)

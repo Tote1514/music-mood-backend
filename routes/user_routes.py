@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
-import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
 from dependencies.auth import get_access_token
 from schemas.user_schema import UserResponse
