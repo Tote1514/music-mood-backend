@@ -31,7 +31,7 @@ class MoodGenerator:
         results = []
         for emotion in emotions:
             moods = self.map_emotions_to_moods(emotion)
-
+            breakpoint()
             dominant = max(moods, key=lambda x: x["score"])["label"]
 
             results.append({
@@ -59,11 +59,14 @@ class MoodGenerator:
         - pesado
         '''
         mood_mapping = {
-            ("alegria", "entusiasmo", "diversão", "otimismo", "aprovação", "orgulho"): "animado",
+            ("alegria", "entusiasmo", "diversão", "otimismo", 
+             "aprovação", "orgulho", "realização", "surpresa"): "animado",
             ("tristeza", "decepção", "luto", "remorso"): "triste",
-            ("neutro", "percepção", "alívio", "curiosidade", "nervosismo", "constrangimento"): "calmo",
+            ("neutro", "percepção", "alívio", "curiosidade", 
+             "nervosismo", "constrangimento", "confusão", "desejo"): "calmo",
             ("amor", "gratidão", "zelo", "admiração"): "romantico",
-            ("raiva", "desaprovação", "aborrecimento", "nojo"): "pesado"
+            ("raiva", "desaprovação", "aborrecimento", 
+             "nojo", "medo"): "pesado"
         }
 
         mood_scores = {}
