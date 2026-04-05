@@ -59,13 +59,13 @@ class MoodGenerator:
         - pesado
         '''
         mood_mapping = {
-            ("alegria", "entusiasmo", "diversão", "otimismo", 
+            ("alegria", "entusiasmo", "diversão", "otimismo",
              "aprovação", "orgulho", "realização", "surpresa"): "animado",
             ("tristeza", "decepção", "luto", "remorso"): "triste",
-            ("neutro", "percepção", "alívio", "curiosidade", 
+            ("neutro", "percepção", "alívio", "curiosidade",
              "nervosismo", "constrangimento", "confusão", "desejo"): "calmo",
             ("amor", "gratidão", "zelo", "admiração"): "romantico",
-            ("raiva", "desaprovação", "aborrecimento", 
+            ("raiva", "desaprovação", "aborrecimento",
              "nojo", "medo"): "pesado"
         }
 

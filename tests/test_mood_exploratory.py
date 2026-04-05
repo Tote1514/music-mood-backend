@@ -1,10 +1,12 @@
+import pytest
+
 from services.mood_services import MoodGenerator
 
-import pytest
 
 @pytest.fixture
 def mood_generator():
     return MoodGenerator()
+
 
 def test_process_text_coloquial_phrases(mood_generator):
     text_inputs = [
@@ -63,7 +65,7 @@ def test_process_coloquial_text_various_inputs(mood_generator, text, expected_mo
 def test_process_normal_text_various_inputs(mood_generator, text, expected_mood):
     mood = mood_generator.process_texts([text])[0]
 
-    print("\n" + "="*50)
+    print("\n" + "=" * 50)
     print(f"Texto: {text}")
     print(f"Dominant mood: {mood['dominant_mood']}")
 
@@ -77,6 +79,7 @@ def test_process_normal_text_various_inputs(mood_generator, text, expected_mood)
         f"\nRecebido: {mood['dominant_mood']}"
         f"\nMoods: {mood.get('moods', [])}"
     )
+
 
 @pytest.mark.exploratory
 def test_ambiguous_phrases(mood_generator):
@@ -95,7 +98,7 @@ def test_ambiguous_phrases(mood_generator):
     results = mood_generator.process_texts(texts)
 
     for text, result in zip(texts, results):
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print(f"Texto: {text}")
         print(f"Dominante: {result['dominant_mood']}")
         print(f"Moods: {result['moods']}")
@@ -119,7 +122,7 @@ def test_input_cases(mood_generator):
     results = mood_generator.process_texts(texts)
 
     for text, result in zip(texts, results):
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print(f"Texto: {text}")
         print(f"Dominante: {result['dominant_mood']}")
         print(f"Moods: {result['moods']}")
