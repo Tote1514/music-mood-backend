@@ -23,7 +23,6 @@ class TrackResponse(BaseModel):
 
 class TrackListResponse(BaseModel):
     tracks: List[TrackResponse]
-    total: int
 
 
 class PlaylistResponse(BaseModel):

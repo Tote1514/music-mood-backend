@@ -4,6 +4,9 @@
 ## ignore nlp models
 nlp_models/
 
+## ignore database
+database/
+
 ## ignore vs code settings
 .vscode/
 
