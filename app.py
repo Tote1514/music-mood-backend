@@ -2,7 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
-from routes import anaylisis_routes, auth_routes, playlist_routes, recomendations_routes,  user_routes
+from routes import (
+    anaylisis_routes,
+    auth_routes,
+    playlist_routes,
+    recomendations_routes,
+    user_routes,
+)
 
 app = FastAPI()
 

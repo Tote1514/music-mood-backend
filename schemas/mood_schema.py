@@ -8,10 +8,6 @@ class Mood(BaseModel):
     score: float = Field(..., ge=0, le=1, example=0.87)
 
 
-class MoodList(BaseModel):
-    moods: List[Mood]
-
-
 class MoodAnalysisRequest(BaseModel):
     text: str = Field(..., example="Hoje foi um dia incrível!")
 

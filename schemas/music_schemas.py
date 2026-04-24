@@ -13,19 +13,15 @@ class PlaylistCreateRequest(BaseModel):
                                          "spotify:track:456"])
 
 
-class TrackResponse(BaseModel):
+class PlaylistResponse(BaseModel):
+    id: str
+    url: str
+    name: str
+
+
+class Track(BaseModel):
     name: str
     artists: List[str]
     album_cover_url: str
     spotify_url: str
     uri: str
-
-
-class TrackListResponse(BaseModel):
-    tracks: List[TrackResponse]
-
-
-class PlaylistResponse(BaseModel):
-    id: str
-    url: str
-    name: str

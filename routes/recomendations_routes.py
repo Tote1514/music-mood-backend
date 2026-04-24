@@ -2,18 +2,20 @@ from http import HTTPStatus
 
 from fastapi import APIRouter
 
-from schemas.mood_schema import MoodList
-from schemas.music_schemas import TrackListResponse
+from schemas.recommendation_schemas import (
+    RecommendationRequest,
+    RecommendationResponse,
+)
 
 router = APIRouter()
 
 
 @router.post("/recommendations",
              status_code=HTTPStatus.OK,
-             response_model=TrackListResponse,
+             response_model=RecommendationResponse,
              summary="Recommend Spotify tracks based on the provided moods"
              )
-def recommend_tracks(moods: MoodList):
+def recommend_tracks(request: RecommendationRequest):
     # Mocking response
     tracks = {
         "tracks": [
@@ -33,4 +35,4 @@ def recommend_tracks(moods: MoodList):
             }
         ]
     }
-    return TrackListResponse(**tracks)
+    return RecommendationResponse(**tracks)
