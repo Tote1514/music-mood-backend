@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import List
 
 import requests
 from fastapi import HTTPException
@@ -80,5 +81,25 @@ class Spotify_Service:
 
         return response.json()
 
+    async def get_tracks_info(self, access_token: str, track_ids: List[str]):
+        track_info_url = "https://api.spotify.com/v1/tracks"
+        
+        headers = {
+            "Authorization": f"Bearer {access_token}"
+        }
+
+        params = {
+            "ids": ",".join(track_ids)
+        }
+
+        response = requests.get(track_info_url, headers=headers, params=params)
+
+        if response.status_code != HTTPStatus.OK:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Failed to fetch track info from Spotify: {response.text}"
+            )
+
+        return response.json()["tracks"]
 
 spotify = Spotify_Service()

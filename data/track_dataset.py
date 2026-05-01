@@ -11,7 +11,7 @@ class TrackDataset:
             print(f"Error: The file '{csv_file}' was not found.")
             self.data = pd.DataFrame()  # Create an empty DataFrame to avoid further errors
 
-    def filter(self, genres: List[str], features, n_tracks=10):
+    def filter(self, genres: List[str], features=None, n_tracks=10):
         df = self.get_data()
         df = self.filter_by_genres(df, genres)
         df = self.filter_by_features(df, features)
