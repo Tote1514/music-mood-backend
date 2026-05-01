@@ -5,7 +5,8 @@
 nlp_models/
 
 ## ignore data files
-data/
+data/raw/
+data/processed/
 
 ## ignore vs code settings
 .vscode/
