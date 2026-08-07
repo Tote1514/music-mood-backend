@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtualenv
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Testes e cache
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+notebooks/
+.ipynb_checkpoints/
+
+# Dados brutos (não precisa no deploy)
+data/raw/
+data/processed/
+
+# Modelos NLP
+nlp_models/
+# remover nlp_models daqui
+
+# Git
+.git/
+.gitignore
+
+# Ambiente
+.env
