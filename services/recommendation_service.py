@@ -11,7 +11,6 @@ class RecommendationService:
     async def recommend(self, genres, moods, n_tracks=10):
         id_list = self.get_filtered_track_ids(genres, moods, n_tracks)
         tracks_details = await self.get_track_details(id_list)
-        breakpoint()
         tracks = self.process_tracks(tracks_details)
         return {"tracks": tracks}
 

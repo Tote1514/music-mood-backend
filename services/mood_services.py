@@ -31,7 +31,6 @@ class MoodGenerator:
         results = []
         for emotion in emotions:
             moods = self.map_emotions_to_moods(emotion)
-            breakpoint()
             dominant = max(moods, key=lambda x: x["score"])["label"]
 
             results.append({
