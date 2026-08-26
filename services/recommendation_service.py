@@ -21,6 +21,9 @@ class RecommendationService:
         return id_list
 
     async def get_track_details(self, track_ids):
+        if not track_ids:
+            return []
+
         try:
             tracks_details = await spotify.get_tracks_info(
                 self.access_token,
@@ -35,10 +38,18 @@ class RecommendationService:
     def process_tracks(track_details):
         processed_tracks = []
         for track in track_details:
+            if not track:
+                continue
+
+            album = track.get("album") or {}
+            album_images = album.get("images") or []
+            album_cover_url = (
+                album_images[0].get("url") if album_images else None
+            )
             processed_tracks.append({
                 "name": track["name"],
                 "artists": [artist["name"] for artist in track["artists"]],
-                "album_cover_url": track["album"]["images"][0]["url"],
+                "album_cover_url": album_cover_url,
                 "spotify_url": track["external_urls"]["spotify"],
                 "uri": track["uri"]
             })

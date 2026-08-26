@@ -22,6 +22,6 @@ class PlaylistResponse(BaseModel):
 class Track(BaseModel):
     name: str
     artists: List[str]
-    album_cover_url: str
+    album_cover_url: Optional[str] = None
     spotify_url: str
     uri: str

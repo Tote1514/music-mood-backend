@@ -1,3 +1,5 @@
+import re
+import unicodedata
 from enum import Enum
 from math import isfinite
 from typing import List
@@ -12,6 +14,15 @@ class FilterType(Enum):
 
 
 class TrackDataset:
+    MIN_POPULARITY = 60
+    CANDIDATE_POOL_SIZE = 50
+    VERSION_SUFFIX_PATTERN = re.compile(
+        r'\s*(?:[-\u2013\u2014]\s*|\()'
+        r'(?:remaster(?:ed)?(?:\s+\d{4})?|single version|album version)'
+        r'\)?\s*$',
+        flags=re.IGNORECASE,
+    )
+
     def __init__(self, csv_file):
         try:
             self.data = pd.read_csv(csv_file)
@@ -28,8 +39,14 @@ class TrackDataset:
     ):
         df = self.get_data()
         df = self.filter_by_genres(df, genres)
+        df = self.filter_by_popularity(df)
+        df = self.remove_duplicate_songs(df)
         df = self.filter_by_features(df, features, filter_type)
-        df = self.get_k_nearest_tracks(df, k=n_tracks)
+        df = self.get_random_tracks_from_top(
+            df,
+            n_tracks=n_tracks,
+            pool_size=self.CANDIDATE_POOL_SIZE,
+        )
         return df
 
     def __len__(self):
@@ -46,6 +63,44 @@ class TrackDataset:
         if not genres:
             return df.copy()
         return df[df['track_genre'].isin(genres)].copy()
+
+    def filter_by_popularity(self, df):
+        if df.empty:
+            return pd.DataFrame()
+        return df[df['popularity'] >= self.MIN_POPULARITY].copy()
+
+    def remove_duplicate_songs(self, df):
+        if df.empty:
+            return pd.DataFrame()
+
+        deduplicated_df = df.copy()
+        deduplicated_df['_song_key'] = (
+            deduplicated_df['artists'].map(self._normalize_text)
+            + '|'
+            + deduplicated_df['track_name'].map(
+                self._normalize_track_name
+            )
+        )
+        deduplicated_df = (
+            deduplicated_df.sort_values(
+                by=['popularity', 'track_id'],
+                ascending=[False, True],
+            )
+            .drop_duplicates(subset='_song_key', keep='first')
+            .drop(columns='_song_key')
+        )
+        return deduplicated_df
+
+    @staticmethod
+    def _normalize_text(value):
+        normalized = unicodedata.normalize('NFKD', str(value))
+        normalized = normalized.encode('ascii', 'ignore').decode()
+        normalized = re.sub(r'[^a-z0-9]+', ' ', normalized.lower())
+        return normalized.strip()
+
+    def _normalize_track_name(self, value):
+        without_version = self.VERSION_SUFFIX_PATTERN.sub('', str(value))
+        return self._normalize_text(without_version)
 
     def filter_by_features(
         self,
@@ -121,15 +176,25 @@ class TrackDataset:
         return 1 - np.clip(cosine_similarity, -1, 1)
 
     @staticmethod
-    def get_k_nearest_tracks(df, k=5):
-        if not isinstance(k, int):
-            raise TypeError("k must be an integer.")
-        if k < 0:
-            raise ValueError("k cannot be negative.")
+    def get_random_tracks_from_top(df, n_tracks=5, pool_size=50):
+        if not isinstance(n_tracks, int) or not isinstance(pool_size, int):
+            raise TypeError("n_tracks and pool_size must be integers.")
+        if n_tracks < 0 or pool_size < 0:
+            raise ValueError("n_tracks and pool_size cannot be negative.")
         if df.empty:
             print("Warning: No data available to find nearest tracks.")
             return pd.DataFrame()
-        return df.head(k)
+
+        candidate_pool = df.head(pool_size)
+        sample_size = min(n_tracks, len(candidate_pool))
+        sampled_tracks = candidate_pool.sample(n=sample_size)
+
+        if 'distance' in sampled_tracks.columns:
+            return sampled_tracks.sort_values(
+                by=['distance', 'popularity', 'track_id'],
+                ascending=[True, False, True],
+            )
+        return sampled_tracks
 
     @staticmethod
     def get_ids(df):
