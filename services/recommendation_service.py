@@ -8,27 +8,31 @@ class RecommendationService:
         self.mood_mapper = mood_mapper
         self.access_token = access_token
 
-    async def recommend(self, genres, moods, n_tracks=10):
+    async def recommend(self, genres, moods, n_tracks=5):
         id_list = self.get_filtered_track_ids(genres, moods, n_tracks)
         tracks_details = await self.get_track_details(id_list)
         tracks = self.process_tracks(tracks_details)
         return {"tracks": tracks}
 
     def get_filtered_track_ids(self, genres, moods, n_tracks):
-        # features = self.mood_mapper.map(moods)
-        df = self.dataset.filter(genres, features=None, n_tracks=n_tracks)
+        features = self.mood_mapper.map(moods)
+        df = self.dataset.filter(genres, features=features, n_tracks=n_tracks)
         id_list = self.dataset.get_ids(df)
         return id_list
 
     async def get_track_details(self, track_ids):
         try:
-            tracks_details = await spotify.get_tracks_info(self.access_token, track_ids)
+            tracks_details = await spotify.get_tracks_info(
+                self.access_token,
+                track_ids,
+            )
             return tracks_details
         except Exception as e:
             print(f"Error fetching track details: {e}")
             return []
 
-    def process_tracks(self, track_details):
+    @staticmethod
+    def process_tracks(track_details):
         processed_tracks = []
         for track in track_details:
             processed_tracks.append({

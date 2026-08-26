@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends
 
 from data.track_dataset import TrackDataset
 from dependencies.auth import get_access_token
+from domain.mood_maper import MoodMapper
 from schemas.recommendation_schemas import (
     RecommendationRequest,
     RecommendationResponse,
@@ -22,7 +23,10 @@ async def recommend_tracks(request: RecommendationRequest,
                      access_token: str = Depends(get_access_token)):
     recommendation_service = RecommendationService(
         dataset=TrackDataset("data/processed/spotify-tracks-filtered.csv"),
-        mood_mapper=...,
+        mood_mapper=MoodMapper(),
         access_token=access_token
     )
-    return await recommendation_service.recommend(request.genres, request.moods)
+    return await recommendation_service.recommend(
+        request.genres,
+        request.moods,
+    )
