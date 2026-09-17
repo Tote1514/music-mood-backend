@@ -17,6 +17,7 @@ venv/
 .ruff_cache/
 .coverage
 htmlcov/
+tests/
 
 # Jupyter
 notebooks/
