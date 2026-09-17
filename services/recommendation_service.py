@@ -1,9 +1,15 @@
 from data.track_dataset import TrackDataset
+from domain.mood_mapper_strategy import MoodMapperStrategy
 from services.spotify_services import spotify
 
 
 class RecommendationService:
-    def __init__(self, dataset: TrackDataset, mood_mapper, access_token: str):
+    def __init__(
+        self,
+        dataset: TrackDataset,
+        mood_mapper: MoodMapperStrategy,
+        access_token: str,
+    ):
         self.dataset = dataset
         self.mood_mapper = mood_mapper
         self.access_token = access_token

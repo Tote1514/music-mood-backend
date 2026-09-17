@@ -1,3 +1,4 @@
+from math import isfinite
 from pathlib import Path
 
 from transformers import BertForSequenceClassification, BertTokenizer, pipeline
@@ -39,6 +40,48 @@ class MoodGenerator:
             })
 
         return results
+
+    def process_texts_with_individual_emotions(self, texts: list[str]):
+        """Return the two highest-scoring emotions, normalized to sum to one.
+
+        Preserve original labels for EmotionMoodMapper. Unlike process_texts,
+        this flow neither groups emotions nor applies the category threshold.
+        The response keys remain compatible with MoodAnalysisResponse.
+        """
+        if not texts:
+            return []
+
+        results = []
+        for emotions in self.detect_emotions(texts):
+            normalized = self.normalize_top_emotions(emotions)
+            results.append({
+                'moods': normalized,
+                'dominant_mood': normalized[0]['label'],
+            })
+        return results
+
+    @staticmethod
+    def normalize_top_emotions(emotions: list[dict]) -> list[dict]:
+        """Select top-2 before normalization, without mutating predictions."""
+        if not emotions:
+            raise ValueError('No emotions provided')
+        if any(
+            not isfinite(emotion['score']) or not 0 <= emotion['score'] <= 1
+            for emotion in emotions
+        ):
+            raise ValueError('Emotion scores must be finite and within [0, 1]')
+
+        top_two = sorted(
+            emotions, key=lambda emotion: emotion['score'], reverse=True,
+        )[:2]
+        total = sum(emotion['score'] for emotion in top_two)
+        if total == 0:
+            raise ValueError('Total emotion score cannot be zero')
+
+        return [
+            {'label': emotion['label'], 'score': emotion['score'] / total}
+            for emotion in top_two
+        ]
 
     def detect_emotions(self, texts: list[str]):
         ''' 

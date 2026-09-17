@@ -1,7 +1,9 @@
 from typing import Dict, List
 
+from domain.mood_mapper_strategy import MoodMapperStrategy
 
-class MoodMapper:
+
+class MoodMapper(MoodMapperStrategy):
     MOOD_PROFILE = {
         "animado": {
             "energy": 0.65,

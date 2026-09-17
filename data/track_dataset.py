@@ -58,7 +58,6 @@ class TrackDataset:
     @staticmethod
     def filter_by_genres(df, genres: List[str]):
         if df.empty:
-            print("Warning: No data available to filter.")
             return pd.DataFrame()
         if not genres:
             return df.copy()
@@ -109,7 +108,7 @@ class TrackDataset:
         filter_type: FilterType = FilterType.EUCLIDEAN,
     ):
         if df.empty:
-            print("Warning: No data available to filter.")
+            print("Warning: No features to filter.")
             return pd.DataFrame()
         if features is None:
             return df.copy()
