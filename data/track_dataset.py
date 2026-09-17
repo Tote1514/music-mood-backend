@@ -15,7 +15,6 @@ class FilterType(Enum):
 
 class TrackDataset:
     MIN_POPULARITY = 60
-    CANDIDATE_POOL_SIZE = 50
     VERSION_SUFFIX_PATTERN = re.compile(
         r'\s*(?:[-\u2013\u2014]\s*|\()'
         r'(?:remaster(?:ed)?(?:\s+\d{4})?|single version|album version)'
@@ -37,17 +36,17 @@ class TrackDataset:
         n_tracks=5,
         filter_type: FilterType = FilterType.EUCLIDEAN,
     ):
+        if not isinstance(n_tracks, int):
+            raise TypeError("n_tracks must be an integer.")
+        if n_tracks < 0:
+            raise ValueError("n_tracks cannot be negative.")
+
         df = self.get_data()
         df = self.filter_by_genres(df, genres)
         df = self.filter_by_popularity(df)
         df = self.remove_duplicate_songs(df)
         df = self.filter_by_features(df, features, filter_type)
-        df = self.get_random_tracks_from_top(
-            df,
-            n_tracks=n_tracks,
-            pool_size=self.CANDIDATE_POOL_SIZE,
-        )
-        return df
+        return df.head(n_tracks).copy()
 
     def __len__(self):
         return len(self.data)
@@ -173,27 +172,6 @@ class TrackDataset:
             where=denominator.to_numpy() != 0,
         )
         return 1 - np.clip(cosine_similarity, -1, 1)
-
-    @staticmethod
-    def get_random_tracks_from_top(df, n_tracks=5, pool_size=50):
-        if not isinstance(n_tracks, int) or not isinstance(pool_size, int):
-            raise TypeError("n_tracks and pool_size must be integers.")
-        if n_tracks < 0 or pool_size < 0:
-            raise ValueError("n_tracks and pool_size cannot be negative.")
-        if df.empty:
-            print("Warning: No data available to find nearest tracks.")
-            return pd.DataFrame()
-
-        candidate_pool = df.head(pool_size)
-        sample_size = min(n_tracks, len(candidate_pool))
-        sampled_tracks = candidate_pool.sample(n=sample_size)
-
-        if 'distance' in sampled_tracks.columns:
-            return sampled_tracks.sort_values(
-                by=['distance', 'popularity', 'track_id'],
-                ascending=[True, False, True],
-            )
-        return sampled_tracks
 
     @staticmethod
     def get_ids(df):
