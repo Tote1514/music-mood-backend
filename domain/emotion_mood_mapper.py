@@ -2,42 +2,26 @@
 
 from typing import Dict, List
 
+from pathlib import Path
+
 from domain.mood_mapper_strategy import MoodMapperStrategy
 from schemas.mood_schema import Mood
 
 
 class EmotionMoodMapper(MoodMapperStrategy):
-    # Theoretical coordinates, not values learned by the classifier.
-    EMOTION_COORDINATES = {
-        'admiração': {'valence': 0.70, 'energy': 0.30},
-        'diversão': {'valence': 0.80, 'energy': 0.80},
-        'raiva': {'valence': -0.80, 'energy': 0.90},
-        'aborrecimento': {'valence': -0.50, 'energy': 0.30},
-        'aprovação': {'valence': 0.50, 'energy': 0.10},
-        'zelo': {'valence': 0.60, 'energy': -0.10},
-        'confusão': {'valence': -0.35, 'energy': 0.25},
-        'curiosidade': {'valence': 0.35, 'energy': 0.45},
-        'desejo': {'valence': 0.55, 'energy': 0.55},
-        'decepção': {'valence': -0.65, 'energy': -0.35},
-        'desaprovação': {'valence': -0.55, 'energy': 0.15},
-        'nojo': {'valence': -0.75, 'energy': 0.40},
-        'constrangimento': {'valence': -0.55, 'energy': 0.35},
-        'entusiasmo': {'valence': 0.80, 'energy': 0.90},
-        'medo': {'valence': -0.85, 'energy': 0.85},
-        'gratidão': {'valence': 0.75, 'energy': -0.10},
-        'luto': {'valence': -0.90, 'energy': -0.75},
-        'alegria': {'valence': 0.85, 'energy': 0.60},
-        'amor': {'valence': 0.90, 'energy': 0.25},
-        'nervosismo': {'valence': -0.55, 'energy': 0.70},
-        'otimismo': {'valence': 0.70, 'energy': 0.35},
-        'orgulho': {'valence': 0.65, 'energy': 0.45},
-        'realização': {'valence': 0.75, 'energy': 0.25},
-        'alívio': {'valence': 0.60, 'energy': -0.55},
-        'remorso': {'valence': -0.75, 'energy': -0.45},
-        'tristeza': {'valence': -0.80, 'energy': -0.65},
-        'surpresa': {'valence': 0.00, 'energy': 0.75},
-        'neutro': {'valence': 0.00, 'energy': 0.00},
-    }
+    def __init__(self):
+        """Initialize the emotion to coordinates mapping."""
+        """Loading the values from pre-pcessed data"""
+        emotion_data_path = Path(__file__).resolve().parents[1] / 'data/processed/emotions_values.csv'
+        self.EMOTION_COORDINATES = {}
+        with open(emotion_data_path, 'r') as f:
+            next(f)  # Skip header
+            for line in f:
+                parts = line.strip().split(',')
+                emotion = parts[0]
+                energy = float(parts[1])
+                valence = float(parts[2])
+                self.EMOTION_COORDINATES[emotion] = {'energy': energy, 'valence': valence}
 
     def map(self, moods: List[Mood]) -> Dict[str, float]:
         """Average individual coordinates weighted by classifier scores.
